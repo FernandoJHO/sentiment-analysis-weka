@@ -1,6 +1,8 @@
 package cl.usach.diinf.tallerbd.sa.train;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -12,7 +14,6 @@ import org.apache.commons.io.FileUtils;
 import weka.attributeSelection.InfoGainAttributeEval;
 import weka.attributeSelection.Ranker;
 import weka.classifiers.Evaluation;
-import weka.classifiers.bayes.NaiveBayesMultinomial;
 import weka.classifiers.functions.LibSVM;
 import weka.core.Instances;
 import weka.filters.Filter;
@@ -34,14 +35,18 @@ public class TrainModel {
 	
 	public static void main(String[] args) throws Exception {
 		
+		// Se leen los Tweets de entrenamiento
 		List<String> tweetPositivos = FileUtils.readLines(new File("src/main/resources/data/positivo.txt"));
 		List<String> tweetNegativos = FileUtils.readLines(new File("src/main/resources/data/negativo.txt"));
 		
-		List<InstanceTweet> tweets = Lists.newArrayList();		
+		List<InstanceTweet> tweets = Lists.newArrayList();	
+		
+		// Se construyen los objetos para el preprocesamiento de los Tweets
 		NormalizerTweets normalizer = new NormalizerTweets();
 		Tokenizer tokenizer = new SimpleTokenizer(new Locale("ES"));
 		StopWordsRemoval stopWordsRemoval = new StopWordsRemoval();
 		
+		// preprocesamiento de los tweets positivos
 		for (String tweet : tweetPositivos){
 			String tweetNormalized = normalizer.normalizeTweet(tweet);
 			List<String> tokenizedTweet = tokenizer.getStrings(tweetNormalized);
@@ -50,6 +55,7 @@ public class TrainModel {
 			tweets.add(instanceTweet);
 		}
 		
+		// preprocesamiento de los tweets negativos
 		for (String tweet : tweetNegativos){
 			String tweetNormalized = normalizer.normalizeTweet(tweet);
 			List<String> tokenizedTweet = tokenizer.getStrings(tweetNormalized);
@@ -58,22 +64,24 @@ public class TrainModel {
 			tweets.add(instanceTweet);
 		}
 		
-		
+		// Obtención de los atributos, en este caso serán el vocabulario que podemos encontrar en los tweets
 		Set<String> vocabulary = new HashSet<>();
 		for (InstanceTweet ins: tweets){
 			vocabulary.addAll(ins.getTokenizedSource());
 		}
 				
+		// Extracción de las características, si un tweet contiene la palabra se agrega esta a un mapa attr --> value
 		for (InstanceTweet ins: tweets){
 			for (String word : vocabulary)
 				if (ins.getTokenizedSource().contains(word))
 					ins.addFeature(word, 1);
 		}
 		
+		// se transformar las InstanceTweet en instancias de weka
 		Instances data = InstanceTweetUtils.toWekaInstances(tweets, vocabulary);
 
-		AttributeSelection filter = new AttributeSelection(); // package //
-		// weka.filters.supervised.attribute!
+		// se aplica un algoritmo de selección para reducir la dimensionalidad
+		AttributeSelection filter = new AttributeSelection(); 
 		InfoGainAttributeEval eval = new InfoGainAttributeEval();
 		Ranker search = new Ranker();
 		search.setNumToSelect(200);
@@ -85,25 +93,25 @@ public class TrainModel {
 		data = Filter.useFilter(
 				data, filter);
 		
+		// Se crea un clasificador SVM
 		LibSVM classifier = new LibSVM();
-		
 		classifier.setGamma(0.1);
 
+		// Se entrena un modelo utilizando 10 fold cross validation
 		Evaluation modeleval = new Evaluation(data);
 		modeleval.crossValidateModel(classifier, data,
 				10, new Random(1));
-			
-		StringBuilder resultEvaluation = new StringBuilder();
-
-		resultEvaluation.append("\t")
-				.append(modeleval.pctCorrect() / 100).append("\t")
-				.append(modeleval.weightedPrecision()).append("\t")
-				.append(modeleval.weightedRecall()).append("\t")
-				.append(modeleval.weightedFMeasure()).append("\n");
 		
-		System.out.println(resultEvaluation.toString());
+		// Se muestran métricas de evaluación del modelo construido
 		System.out.println(modeleval.toSummaryString());
 		System.out.println(modeleval.toClassDetailsString());
+		
+		 // Serializar el modelo
+		 ObjectOutputStream oos = new ObjectOutputStream(
+		                            new FileOutputStream("src/main/resources/model/svm.model"));
+		 oos.writeObject(classifier);
+		 oos.flush();
+		 oos.close();
 		
 	}
 

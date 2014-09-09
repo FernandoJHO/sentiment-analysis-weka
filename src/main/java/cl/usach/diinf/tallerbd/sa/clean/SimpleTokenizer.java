@@ -5,7 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-
+/**
+ * Implementación básica de un tokenizador utilizando un BreakIterator 
+ * <link>http://docs.oracle.com/javase/7/docs/api/java/text/BreakIterator.html</link>
+ * @author rvasquez
+ *
+ */
 public class SimpleTokenizer implements Tokenizer{
 	
 	private Locale locale;

@@ -8,15 +8,22 @@ import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
-
+/**
+ * Clase utilitaria para las instancias de tweet
+ * @author rvasquez
+ *
+ */
 public class InstanceTweetUtils {
-	
-	private static final Logger logger =  Logger.getLogger(InstanceTweetUtils.class.getName());
-	
+		
 	//Hiding constructor
 	private InstanceTweetUtils(){}
 
-	
+	/**
+	 * Transforma una lista de InstanceTweet en instancias de weka, para el entrenamiento.
+	 * @param instancesTweets
+	 * @param attributes
+	 * @return
+	 */
 	public static Instances toWekaInstances(List<InstanceTweet> instancesTweets, Set<String> attributes){
 		
 		FastVector attrsWeka = new FastVector();
@@ -53,7 +60,6 @@ public class InstanceTweetUtils {
 			}
 			insWeka.setValue(classAttribute, instanceTweet.getLabel().name());
 			data.add(insWeka);
-			logger.info(instanceTweet.toString() + " procesado");
 
 		}
 		return data;

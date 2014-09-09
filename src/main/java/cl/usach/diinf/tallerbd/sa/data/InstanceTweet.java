@@ -5,6 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Representa una instancia de un tweet
+ * @author rvasquez
+ *
+ */
 public class InstanceTweet {
 	
 	private final String source;
@@ -12,6 +17,12 @@ public class InstanceTweet {
 	private final TweetLabel label;
 	private Map<String, Integer> features;
 	
+	/**
+	 * Constructor
+	 * @param source tweet original sin ninguna modificación
+	 * @param tokenizedSource tweet tokenizado 
+	 * @param label etiqueta del tweet
+	 */
 	public InstanceTweet(String source, List<String> tokenizedSource,
 			TweetLabel label) {
 		super();

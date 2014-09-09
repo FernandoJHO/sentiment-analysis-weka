@@ -2,7 +2,11 @@ package cl.usach.diinf.tallerbd.sa.clean;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+/**
+ * Normaliza patrones que se pueden encontrar en los tweets como hashtags, usuarios, urls, etc.
+ * @author rvasquez
+ *
+ */
 public class NormalizerTweets {
 
 	private static String PATTERN_HASHTAG = "(?:\\s|\\A)[##]+([A-Za-z0-9-_]+)";
@@ -11,7 +15,13 @@ public class NormalizerTweets {
 	public NormalizerTweets() {
 		super();
 	}
-	
+	/**
+	 * Reemplaza los patrones que se encuentren en un texto.
+	 * @param strpattern patron a reemplazar
+	 * @param text entrada de texto
+	 * @param replace texto por el que será reemplazado
+	 * @return
+	 */
 	private String normalizePattern(String strpattern, String text, String replace){
 		Pattern pattern = Pattern.compile(strpattern);
 		Matcher matcher = pattern.matcher(text);
@@ -25,9 +35,11 @@ public class NormalizerTweets {
 		}
 		return text;
 	}
-	
-	
-
+	/**
+	 * Recibe un tweet y retorna una versión normalizada
+	 * @param tweet
+	 * @return
+	 */
 	public String normalizeTweet(String tweet){
 		
 		String normalizedTweet = normalizePattern(PATTERN_HASHTAG, tweet, "<HASHTAG>");

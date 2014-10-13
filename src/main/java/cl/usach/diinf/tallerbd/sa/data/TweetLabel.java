@@ -6,6 +6,7 @@ package cl.usach.diinf.tallerbd.sa.data;
  */
 public enum TweetLabel {
 	
+	NEUTRAL,
 	POSITIVO,
 	NEGATIVO;
 

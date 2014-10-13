@@ -106,13 +106,6 @@ public class TrainModel {
 		System.out.println(modeleval.toSummaryString());
 		System.out.println(modeleval.toClassDetailsString());
 		
-		 // Serializar el modelo
-		 ObjectOutputStream oos = new ObjectOutputStream(
-		                            new FileOutputStream("src/main/resources/model/svm.model"));
-		 oos.writeObject(classifier);
-		 oos.flush();
-		 oos.close();
-		
 	}
 
 }

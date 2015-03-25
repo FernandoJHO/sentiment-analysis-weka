@@ -28,6 +28,8 @@ import cl.usach.diinf.tallerbd.sa.clean.Tokenizer;
 import cl.usach.diinf.tallerbd.sa.data.InstanceTweet;
 import cl.usach.diinf.tallerbd.sa.data.InstanceTweetUtils;
 import cl.usach.diinf.tallerbd.sa.data.TweetLabel;
+import cl.usach.diinf.tallerbd.sa.features.EmoticonsFeatureExtractor;
+import cl.usach.diinf.tallerbd.sa.features.FeatureExtractor;
 
 public class TrainModel {
 	
@@ -70,8 +72,14 @@ public class TrainModel {
 			vocabulary.addAll(ins.getTokenizedSource());
 		}
 				
+		FeatureExtractor emoticonsExtractor =  new EmoticonsFeatureExtractor();
+		
 		// Extracción de las características, si un tweet contiene la palabra se agrega esta a un mapa attr --> value
 		for (InstanceTweet ins: tweets){
+			
+			emoticonsExtractor.extractFeature(ins);
+			
+			
 			for (String word : vocabulary)
 				if (ins.getTokenizedSource().contains(word))
 					ins.addFeature(word, 1);
@@ -93,15 +101,23 @@ public class TrainModel {
 		data = Filter.useFilter(
 				data, filter);
 		
+		for (int i = 0; i < args.length; i++) {
+			for (int j = 0; j < args.length; j++) {
+				
+			}
+		}
+		
 		// Se crea un clasificador SVM
 		LibSVM classifier = new LibSVM();
 		classifier.setGamma(0.1);
+		classifier.setCoef0(0.12);
 
 		// Se entrena un modelo utilizando 10 fold cross validation
 		Evaluation modeleval = new Evaluation(data);
 		modeleval.crossValidateModel(classifier, data,
 				10, new Random(1));
 		
+				
 		// Se muestran métricas de evaluación del modelo construido
 		System.out.println(modeleval.toSummaryString());
 		System.out.println(modeleval.toClassDetailsString());

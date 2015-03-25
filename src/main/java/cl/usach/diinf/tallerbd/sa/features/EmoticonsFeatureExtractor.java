@@ -1,7 +1,5 @@
 package cl.usach.diinf.tallerbd.sa.features;
 
-import java.util.Iterator;
-
 import cl.usach.diinf.tallerbd.sa.data.InstanceTweet;
 
 public class EmoticonsFeatureExtractor implements FeatureExtractor{
@@ -23,10 +21,7 @@ public class EmoticonsFeatureExtractor implements FeatureExtractor{
 		
 		instanceTweet.addFeature("posEmoticons", countPosEmoticons);
 		instanceTweet.addFeature("negEmoticons", countNegEmoticons);
-		
-			
-		
-		// TODO Auto-generated method stub
+		instanceTweet.addFeature("length", instanceTweet.getTokenizedSource().size());
 		return instanceTweet;
 	}
 	
